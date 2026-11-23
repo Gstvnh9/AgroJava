@@ -1,8 +1,8 @@
 package org.example;
 
+import java.io.*;
 import java.util.Scanner;
 import java.util.Locale;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 public class Main {
@@ -13,11 +13,14 @@ public class Main {
         entrada.useLocale(Locale.US);
 
         int opcao = 0;
-        double mediaPluviosidade = 0;
-        double maiorIndice = 0;
-        double[] chuva = new double[7];
         int[][] fazenda = new int[4][4];
         int alertasQuantidade = 0;
+
+        double mediaPluviosidade = 0;
+        double maiorIndice = 0;
+        double total = 0;
+
+        double[] chuva = new double[7];
 
         do {
 
@@ -120,13 +123,6 @@ public class Main {
                 System.out.println("Informe a porcentagem do quarto talhão, da quarta região: ");
                 fazenda[3][3] = entrada.nextInt();
 
-                System.out.println("Pressione enter para voltar ao menu inicial...");
-                entrada.nextLine();
-                entrada.nextLine();
-
-
-            } else if (opcao == 2) {
-
                 for (int i = 0; i < chuva.length; i++) {
 
                     mediaPluviosidade += chuva[i];
@@ -141,9 +137,18 @@ public class Main {
 
                     }
 
+                    total += chuva[i];
+
                 }
 
                 mediaPluviosidade /= 7;
+
+                System.out.println("Pressione enter para voltar ao menu inicial...");
+                entrada.nextLine();
+                entrada.nextLine();
+
+
+            } else if (opcao == 2) {
 
                 System.out.println("===================================== RELATÓRIO GERAL ====================================");
                 System.out.println("Média de Pluviosidade Semanal: " + mediaPluviosidade + " mm");
@@ -183,6 +188,40 @@ public class Main {
                 System.out.println("Pressione enter para voltar ao menu inicial...");
                 entrada.nextLine();
                 entrada.nextLine();
+
+            }
+
+            try {
+
+                File arquivo = new File("semanaAgrícola.csv");
+                BufferedWriter escritor = new BufferedWriter (new FileWriter ("semanaAgricola.csv"));
+
+                escritor.write("Data, Segunda-Feira, Terça-Feira, Quarta-Feira, Quinta-Feira, Sexta-Feira, Sábado, Domingo, Média, Total");
+                escritor.newLine();
+                escritor.write("" + chuva[1] + chuva[2] + chuva[3] + chuva[4] + chuva[5] + chuva[6] + chuva[0] + mediaPluviosidade + total);
+                escritor.close();
+
+                if (arquivo.exists()) {
+
+                    System.out.println("O arquivo já existe!");
+
+                } else {
+
+                    if (arquivo.createNewFile()) {
+
+                        System.out.println("Arquivo criado com sucesso: " + arquivo.getName());
+
+                    } else {
+
+                        System.out.println("Falha ao criar o arquivo.");
+
+                    }
+
+                }
+
+            } catch (IOException e) {
+
+                System.out.println("Erro: " + e.getMessage());
 
             }
 
